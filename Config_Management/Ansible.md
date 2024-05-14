@@ -71,38 +71,61 @@ It runs on a control node and that has access to a playbook and hosts file. The 
 
 
 ## How we use it
-### Set up
+
+- Launching our app and DB servers from other projects
+
 
 ![img.png](img.png)
 
-1. Need a controller node to control any instance
-2. it can connect to the instances and perform any actions without first going on to the instances and installing an agent (agentless)
-3. it installs the dependencies for you in the background without you having to worry, its abstracted away from you
-4. install it on an ec2 instance by SSHing in and run update and upgrade command then
-5. `sudo apt-add-repository ppa:ansible/ansible`
-6. `sudo apt-get install ansible`
-7. then copy your ssh key into the server into `~/.ssh`
-8. can do this by using scp or even copy and pasting `scp -i ~/.ssh/mytest.key user@dest_ip:/<filepath on host> <path on client>` 
-9. `scp -i ~/.ssh/tech258.pem ~/.ssh/tech258.pem ubuntu@ip:~/.ssh/`
-10. run sudo chmod 400 key_name to make it read only by owner (necessary step otherwise key could become invalidated)
-11. need to tell ansible to use this so go to cd /etc/ansible and sudo nano hosts
-12. insert the name of the host and its ip and the user and the key in this format:
-13. ```
-    [APP]
-    ec2-instance-app ansible_host=3.249.1.76 ansible_user=ubuntu ansible_ssh_private_key_file=~/.ssh/tech258.pem
-    ```
-14. ![img_1.png](img_1.png)
+### High level overview
+
+**3 Instances** <br>
+1. **1 Control node**
+   1. Contains hosts file and playbook file
+2. **2 Managed instances**
+   1. App instance
+   2. Database instance
+- Need a controller node to control any instance
+- It can connect to the instances and perform any actions without first going on to the instances and installing an agent (agentless)
+- It installs the dependencies for you in the background without you having to worry, its abstracted away from you.
+
+### Set up instances
+
+1. Set up 3 ec2 instances with the names app, db and control and configure them to have the right security groups (for now SSH on port 22 is adequate)
+2. Connect to the control instance via SSH
+3. Run `sudo apt update` and `sudo apt upgrade` command then
+4. `sudo apt-add-repository ppa:ansible/ansible`
+5. `sudo apt-get install ansible`
+
+#### Ansible installed
+
+### Set up hosts file
+
+1. Now need to copy your ssh key into the server into **_~/.ssh_**
+2. Can do this by using scp or even copy and pasting using a text editor `scp -i ~/.ssh/mytest.key user@dest_ip:/<filepath on host> <path on client>` 
+3. `scp -i ~/.ssh/tech258.pem ~/.ssh/tech258.pem ubuntu@ip:~/.ssh/`
+4. :warning: DO NOT SKIP THIS STEP - Run sudo chmod 400 key_name to make it read only by owner (necessary step otherwise key could become invalidated)
+5. Need to tell ansible to use this so go to cd /etc/ansible and sudo nano hosts
+6. Insert the name of the host and its ip and the user and the key in this format:
+7. ```
+   [APP]
+   ec2-instance-app ansible_host=3.249.1.76 ansible_user=ubuntu ansible_ssh_private_key_file=~/.ssh/tech258.pem
+   ```
+8. ![img_1.png](img_1.png)
 
 ### Simple Adhoc Commands
 
-1. run commands by using sudo ansible then name then -a then command eg 
-2. `sudo ansible APP -a "uname -a"`
-3. -a means arguments so we want to pass something into ansible. In this case we are using it to pass the commands in the quotation marks to whicver servers we have selected (in this case all of them)
-4. if we want to run it on all we can replace app with all so  `sudo ansible all -a "uname -a"`
-5. ![img_2.png](img_2.png)
-6. another example is copying a file over
-7. can create a file a a test then use the following command to send it where it needs to go, or everywhere
-8. `ansible all -m copy -a "src=/path/to/source/file dest=/path/to/destination/file"`
-9. The -m flag in the ansible command stands for "module." It allows you to specify which Ansible module you want to execute on the target hosts. Modules are essentially standalone scripts that Ansible uses to perform tasks on remote systems
-10. we can check it ran by using the all function again with the -a 
-11. ![img_3.png](img_3.png)
+1. Run commands by using sudo ansible then name of app then -a then "command" eg 
+   - `sudo ansible APP -a "uname -a"`
+      - `-a` means arguments so we want to pass something into ansible. In this case we are using it to pass the commands in the quotation marks to whicver servers we have selected (in this case all of them)
+2. If we want to run it on all we can replace app with all so  `sudo ansible all -a "uname -a"`
+3. ![img_2.png](img_2.png) <br><br><br>
+
+
+1. Another example is copying a file over
+2. Can create a file called testing-controller.txt on the controller node using `touch testing-controller.txt`
+3. Then use the following command to send it where it needs to go, or everywhere using the built-in copy function
+   - `ansible all -m copy -a "src=/path/to/source/file dest=/path/to/destination/file"`
+      - The -m flag in the ansible command stands for "module." It allows you to specify which Ansible module you want to execute on the target hosts. Modules are essentially standalone scripts that Ansible uses to perform tasks on remote systems
+4. We can check it ran by using the all function again with the -a 
+5. ![img_3.png](img_3.png)
