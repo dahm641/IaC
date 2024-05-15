@@ -1,0 +1,49 @@
+# Creating a playbook to install/configure nginx in the webserver
+---
+# YAML starts with three dashes
+
+# add the name of the host app
+- hosts: APP
+
+# see the logs, gather facts
+  gather_facts: yes
+
+# provide admin access - sudo (adds sudo to every command)
+  become: true
+
+# add instructions to install nginx on the app server
+  tasks:
+  - name: Installing Nodejs
+    apt: pkg=nodejs state=present
+
+
+  - name: Clone the GitHub repository
+    git:
+      repo: https://github.com/dahm641/cicd.git  # Replace with your GitHub repository URL
+      dest: /home/ubuntu/github  # Replace with the local directory where you want to clone the repository
+      version: main  # Replace with the branch or tag you want to clone (optional, defaults to 'master')
+    register: git_clone_result  # Store the result of the git clone task
+
+  - name: Display the result of git clone
+    debug:
+      var: git_clone_result
+
+#  - name: Install NPM
+#    apt: pkg=npm state=present
+
+
+#  - name: Install NPM
+#       shell: npm i
+#       args:
+#         chdir: /home/ubuntu
+
+#  - name: Install PM2
+#    npm:
+#      name: pm2
+#      global: yes
+
+
+  - name: Start application using npm with environment variables
+    npm:
+      path: /home/ubuntu/github/app
+      args: run start -- --port=3000

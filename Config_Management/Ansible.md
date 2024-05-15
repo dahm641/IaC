@@ -115,6 +115,18 @@ It runs on a control node and that has access to a playbook and hosts file. The 
 
 ### Simple Adhoc Commands
 
+1. A good check to do is ping your managed instances to see if you can connect to them
+   - `sudo ansible all -m ping`
+   - Should give you a result like this 
+   - ![img_5.png](img_5.png)<br><br>
+**_Add this to your /etc/anisble/ansible.cfg file to avoid having to confirm the fingerprint on first time connection_**
+ ```
+[ssh_connection]
+ssh_args = -o StrictHostKeyChecking=no
+```
+
+
+
 1. Run commands by using sudo ansible then name of app then -a then "command" eg 
    - `sudo ansible APP -a "uname -a"`
       - `-a` means arguments so we want to pass something into ansible. In this case we are using it to pass the commands in the quotation marks to whicver servers we have selected (in this case all of them)
@@ -129,3 +141,31 @@ It runs on a control node and that has access to a playbook and hosts file. The 
       - The -m flag in the ansible command stands for "module." It allows you to specify which Ansible module you want to execute on the target hosts. Modules are essentially standalone scripts that Ansible uses to perform tasks on remote systems
 4. We can check it ran by using the all function again with the -a 
 5. ![img_3.png](img_3.png)
+
+### Playbook 
+
+**Creating a playbook to install nginx**
+
+1. Create a file called nginx-playbook.yml
+2. Add the following script
+    ```bash
+    # Creating a playbook to install/configure nginx in the webserver
+    ---
+    # YAML starts with three dashes
+    
+    # add the name of the host app
+    - hosts: APP
+    
+    # see the logs, gather facts
+      gather_facts: yes
+    
+    # provide admin access - sudo (adds sudo to every command)
+      become: true
+    
+    # add instructions to install nginx on the app server
+      tasks:
+      - name: Installing Nginx web server
+        apt: pkg=nginx state=present
+    ```
+3. Run the playbook by using `sudo ansible-playbook nginx-playbook.yml`
+4. Check nginx is running `sudo ansible APP -a "sudo systemctl status nginx"`
