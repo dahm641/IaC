@@ -102,22 +102,23 @@
     - app
     - db
 
+**Use the following commands**
+
+- **`terraform init`**: Initializes a working directory containing Terraform configuration files. This command downloads necessary plugins and sets up the backend.
+
+- **`terraform plan`**: Creates an execution plan, showing what actions Terraform will take to achieve the desired state defined in the configuration files. It helps to verify the changes before applying them.
+
+- **`terraform apply`**: Applies the changes required to reach the desired state of the configuration. It provisions or modifies the infrastructure accordingly.
+
+- **`terraform destroy`**: Destroys the infrastructure managed by the configuration files. It is used to clean up and remove all resources defined in the configurations.
+
 ### Installation
 
 :warning: **_DO NOT COMMIT ANY CODE UNTIL YOU HAVE SET UP THE .gitignore file_** :warning: <br>
 :warning: **_DO NOT INCLUDE SECRET KEYS OR ID IN ANY CODE_** :warning:
 
 - [_Click here_](https://developer.hashicorp.com/terraform/tutorials/aws-get-started/install-cli#install-cli) for full official installation <br><br>
-- Need to download file and then register its path <br><br>
-  1. **Open _run_ in windows and type in** `sysdm.cpl` <br>  ![img_3.png](img_3.png) <br><br>
-  2. **Go to advanced and then environment variables** <br> ![img_4.png](img_4.png) <br><br>
-  3. **Go to path and click edit** <br> ![img_5.png](img_5.png) <br><br>
-  4. **Add your path to where you have the downloaded terraform file and click ok** <br> ![img_6.png](img_6.png) <br><br>
-  5. **Check it has worked by checking version in git bash use command** `terraform -v`<br> ![img_7.png](img_7.png) <br><br>
-  6. **In the same place where you set the environment variables you can add your AWS secret key and ID so that terraform can use it when it wants to create resources for you without you needing to specify them.**
-     - It checks this by looking for 2 specific variables that must be saved as: 
-     - `AWS_ACCESS_KEY_ID`
-     - `AWS_SECRET_ACCESS_KEY`
+- Full installation guide found in appendix
 
 ## Creating first job
 
@@ -130,7 +131,7 @@
 2. **Create a file with the ending of .tf** <br><br>
 3. **In this file choose your provider and region** <br>![img_8.png](img_8.png) <br><br>
    - This tells terraform what provider and consequently which dependencies to run when we use terraform init
-4. **Save it and run terraform init to initialise terraform into your working directory.** <br>
+4. **Save it and run `terraform init` to initialise terraform into your working directory.** <br>
    - Output should look like this: <br> ![img_9.png](img_9.png) <br><br>
 
 ### Plan
@@ -217,7 +218,9 @@
     }
    ```
    ![img_21.png](img_21.png)
-3. Refer back to this in main so go to wherever ami is used
+3. Refer back to this in main so go to wherever ami is used using _var.(variablename)_ <br>
+4. `ami = var.app_ami_id` <br>
+![img_26.png](img_26.png)
 ### Full job
 
 - The full job now has a main.tf and a variables.tf that it can reference
@@ -234,13 +237,31 @@
   3. terraform.tfstate
   4. terraform.tfstate.backup
   5. variable.tf
-- Add these to your .gitignore file 
+- Create a .gitignore file on your directory
+- ```bash
+  # .gitignore file
+
+    # Ignore Terraform state files
+    *.tfstate
+    *.tfstate.backup
+    
+    # Ignore variable files
+    variables.tf
+    
+    # Ignore .terraform directory
+    .terraform/
+    
+    # Ignore any other sensitive files
+    *.tfvars
+    terraform.tfvars
+  ```
 - Verify they are not included by opening gitbash and running `git status --ignored`
 - ![img_22.png](img_22.png)
 
-## Creating a script to launch a service on multiple providers
+## Creating a script to launch a service on multiple providers - GitHub and AWS
 
-
+- To create resources on two different providers we have to specify them in our file and ensure we have the right access
+- 
 
 ## Other useful information
 
@@ -249,6 +270,23 @@
 - A useful one to stop instances rather than terminate is `terraform apply -var 'instance_id=<your_instance_id>' -var 'desired_state=stopped`
 
 ## Appendix
+
+### Installation guide 
+
+:warning: **_DO NOT COMMIT ANY CODE UNTIL YOU HAVE SET UP THE .gitignore file_** :warning: <br>
+:warning: **_DO NOT INCLUDE SECRET KEYS OR ID IN ANY CODE_** :warning:
+
+- [_Click here_](https://developer.hashicorp.com/terraform/tutorials/aws-get-started/install-cli#install-cli) for full official installation <br><br>
+- Need to download file and then register its path <br><br>
+  1. **Open _run_ in windows and type in** `sysdm.cpl` <br>  ![img_3.png](img_3.png) <br><br>
+  2. **Go to advanced and then environment variables** <br> ![img_4.png](img_4.png) <br><br>
+  3. **Go to path and click edit** <br> ![img_5.png](img_5.png) <br><br>
+  4. **Add your path to where you have the downloaded terraform file and click ok** <br> ![img_6.png](img_6.png) <br><br>
+  5. **Check it has worked by checking version in git bash use command** `terraform -v`<br> ![img_7.png](img_7.png) <br><br>
+  6. **In the same place where you set the environment variables you can add your AWS secret key and ID so that terraform can use it when it wants to create resources for you without you needing to specify them.**
+     - It checks this by looking for 2 specific variables that must be saved as: 
+     - `AWS_ACCESS_KEY_ID`
+     - `AWS_SECRET_ACCESS_KEY`
 
 ### Transferring security group rules to variables.tf
 
