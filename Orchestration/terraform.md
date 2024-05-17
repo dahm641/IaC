@@ -19,6 +19,9 @@
 * [Terraform](#terraform-)
   * [What is it](#what-is-it)
     * [Desired state vs current state](#desired-state-vs-current-state)
+      * [Desired State](#desired-state)
+      * [Current state](#current-state)
+      * [How terraform uses both](#how-terraform-uses-both)
   * [Benefits](#benefits)
   * [Using terraform](#using-terraform)
     * [The plan](#the-plan-)
@@ -30,8 +33,10 @@
     * [Creating separate variable file](#creating-separate-variable-file)
     * [Full job](#full-job)
     * [Git ignore](#git-ignore)
+  * [Creating a script to launch a service on multiple providers - GitHub and AWS](#creating-a-script-to-launch-a-service-on-multiple-providers---github-and-aws)
   * [Other useful information](#other-useful-information)
   * [Appendix](#appendix)
+    * [Installation guide](#installation-guide-)
     * [Transferring security group rules to variables.tf](#transferring-security-group-rules-to-variablestf)
       * [Original main: <br><br>](#original-main-brbr)
       * [New variables file](#new-variables-file)
@@ -277,17 +282,22 @@
 :warning: **_DO NOT INCLUDE SECRET KEYS OR ID IN ANY CODE_** :warning:
 
 - [_Click here_](https://developer.hashicorp.com/terraform/tutorials/aws-get-started/install-cli#install-cli) for full official installation <br><br>
-- Need to download file and then register its path <br><br>
-  1. **Open _run_ in windows and type in** `sysdm.cpl` <br>  ![img_3.png](img_3.png) <br><br>
-  2. **Go to advanced and then environment variables** <br> ![img_4.png](img_4.png) <br><br>
-  3. **Go to path and click edit** <br> ![img_5.png](img_5.png) <br><br>
-  4. **Add your path to where you have the downloaded terraform file and click ok** <br> ![img_6.png](img_6.png) <br><br>
-  5. **Check it has worked by checking version in git bash use command** `terraform -v`<br> ![img_7.png](img_7.png) <br><br>
-  6. **In the same place where you set the environment variables you can add your AWS secret key and ID so that terraform can use it when it wants to create resources for you without you needing to specify them.**
-     - It checks this by looking for 2 specific variables that must be saved as: 
-     - `AWS_ACCESS_KEY_ID`
-     - `AWS_SECRET_ACCESS_KEY`
-
+  - Need to download file and then register its path <br><br>
+    1. **Open _run_ in windows and type in** `sysdm.cpl` <br>  ![img_3.png](img_3.png) <br><br>
+    2. **Go to advanced and then environment variables** <br> ![img_4.png](img_4.png) <br><br>
+    3. **Go to path and click edit** <br> ![img_5.png](img_5.png) <br><br>
+    4. **Add your path to where you have the downloaded terraform file and click ok** <br> ![img_6.png](img_6.png) <br><br>
+    5. **Check it has worked by checking version in git bash use command** `terraform -v`<br> ![img_7.png](img_7.png) <br><br>
+    6. **In the same place where you set the environment variables you can add your AWS secret key and ID so that terraform can use it when it wants to create resources for you without you needing to specify them.**
+       - It checks this by looking for 2 specific variables that must be saved as: 
+       - `AWS_ACCESS_KEY_ID`
+       - `AWS_SECRET_ACCESS_KEY`
+       - Can also use this:
+          ```bash
+          export AWS_ACCESS_KEY_ID="your-access-key-id"
+          export AWS_SECRET_ACCESS_KEY="your-secret-access-key"
+          export AWS_DEFAULT_REGION="your-preferred-region"
+          ```
 ### Transferring security group rules to variables.tf
 
 #### Original main: <br><br>
