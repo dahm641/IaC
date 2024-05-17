@@ -144,6 +144,21 @@ ssh_args = -o StrictHostKeyChecking=no
 
 ### Playbook 
 
+- We can create a playbook by creating a .yml file within /etc/ansible directory
+  - `sudo nano playbook.yml`
+
+#### App playbook
+
+**What do we need?**
+
+- Nginx
+- NodeJS
+- NPM
+- PM2
+- Our app code
+
+
+
 **Creating a playbook to install nginx**
 
 1. Create a file called nginx-playbook.yml
@@ -167,5 +182,145 @@ ssh_args = -o StrictHostKeyChecking=no
       - name: Installing Nginx web server
         apt: pkg=nginx state=present
     ```
+   - `hosts`
 3. Run the playbook by using `sudo ansible-playbook nginx-playbook.yml`
 4. Check nginx is running `sudo ansible APP -a "sudo systemctl status nginx"`
+
+
+
+
+
+
+
+```bash
+# Creating a playbook to install/configure nginx in the webserver
+---
+# YAML starts with three dashes
+
+# add the name of the host app
+
+- hosts: APP2
+
+# see the logs, gather facts
+  gather_facts: yes
+
+# provide admin access - sudo (adds sudo to every command)
+  become: true
+
+# add install compatible nodejs
+  tasks:
+
+#  - name: Installing Nodejs
+#    shell: |
+#      curl -sL https://deb.nodesource.com/setup_17.x | sudo -E bash -
+#      sudo apt-get install nodejs -y
+
+# add instructions to install nginx on the app server
+
+  - name: Installing Nginx web server
+    apt: pkg=nginx state=present
+
+  - name: Clone the GitHub repository
+    git:
+      repo: https://github.com/dahm641/cicd.git  # Replace with your GitHub repository URL
+      dest: /home/ubuntu/github  # Replace with the local directory where you want to clone the repository
+      version: main  # Replace with the branch or tag you want to clone (optional, defaults to 'master')
+    register: git_clone_result  # Store the result of the git clone task
+
+  - name: Display the result of git clone
+    debug:
+      var: git_clone_result
+
+# run from provision script
+  - name: Run provisions and start app
+    shell: bash /home/ubuntu/github/environment/app/provision.sh
+    args:
+      chdir: /home/ubuntu/github
+
+# same as provision script
+
+#  - name: Set up host varibale and restart app
+#    shell: |
+#      cd /home/ubuntu/github/app
+#      echo "DB_HOST=mongodb://52.213.137.14:27017/posts" | sudo tee -a /etc/environment >/dev/null
+#      source /etc/environment
+#      sudo rm -rf /usr/lib/node_modules/pm2
+#      sudo -E npm install
+#      sudo npm install pm2 -g
+#      sudo pm2 kill
+#      sudo pm2 start seeds/seed.js
+#      sudo pm2 start app.js
+
+
+#  - name: Install NPM
+#    shell: npm install -g
+#    apt: pkg=npm state=present
+
+
+#  - name: Upgrade
+#    shell: |
+
+```
+
+```bash
+# this playbook will install mongodb in db server
+
+---
+- hosts: DB
+
+  gather_facts: yes
+
+  become: true
+
+  tasks:
+  - name: install and configure mongodb
+    apt: pkg=mongodb state=present
+
+  - name: Clone the GitHub repository
+    git:
+      repo: https://github.com/dahm641/cicd.git  # Replace with your GitHub repository URL
+      dest: /home/ubuntu/github  # Replace with the local directory where you want to clone the repository
+      version: main  # Replace with the branch or tag you want to clone (optional, defaults to 'master')
+    register: git_clone_result  # Store the result of the git clone task
+
+
+  - name: Copy new mongod.conf file
+    copy:
+      src: /home/ubuntu/github/environment/db/mongod.conf  # Path to the new configuration file on the Ansible control node
+      dest: /etc/mongodb.conf  # Destination path on the target server
+      remote_src: yes
+
+#  - name: change bind ip
+#    shell: bash /home/ubuntu/github/environment/db/provision.sh
+
+  - name: Restarting mongodb
+    service:
+       name: mongodb
+       state: restarted
+
+  - name: Enable MongoDB service on boot
+    service:
+      name: mongodb
+      enabled: yes
+```
+
+```bash
+# Creating a playbook to install/configure nginx in the webserver
+---
+# YAML starts with three dashes
+
+# add the name of the host app
+- hosts: APP
+
+# see the logs, gather facts
+  gather_facts: yes
+
+# provide admin access - sudo (adds sudo to every command)
+  become: true
+
+# add instructions to install nginx on the app server
+  tasks:
+  - name: Installing Nginx web server
+    apt: pkg=nginx state=present
+# ensure nginx is in a running state
+```
