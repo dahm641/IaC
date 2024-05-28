@@ -4,13 +4,13 @@
 
 <div style="width:750px; margin: auto;">
 
-![img_2.png](img_2.png)
+![img_2.png](images/img_2.png)
 </div>
 
 
 <div style="width:750px; margin: auto;">
 
-![terraform diagram](img_1.png)
+![terraform diagram](images/img_1.png)
 </div>
 
 # Terraform 
@@ -88,7 +88,7 @@
 
 ### The plan 
 
-![img_25.png](img_25.png)
+![img_25.png](images/img_25.png)
 
 - Going to use my pc with terraform installed to create resources within AWS.
 - I will set up my AWS keys so they are used on my system to authenticate and authorise me to make changes to my environment.
@@ -134,16 +134,41 @@
 
 1. **Go to your directory where you would like to use terraform** <br><br>
 2. **Create a file with the ending of .tf** <br><br>
-3. **In this file choose your provider and region** <br>![img_8.png](img_8.png) <br><br>
-   - This tells terraform what provider and consequently which dependencies to run when we use terraform init
+3. **In this file add lines to specify your provider and region** 
+    ```hcl
+   provider "aws"{
+    
+            region = "eu-west-1"
+    }
+    ```
+    <br>![img_8.png](images/img_8.png) <br><br>
+   - This tells terraform what provider and consequently which dependencies to run when we use terraform init <br><br>
+   
 4. **Save it and run `terraform init` to initialise terraform into your working directory.** <br>
-   - Output should look like this: <br> ![img_9.png](img_9.png) <br><br>
+   - Output should look like this: <br> ![img_9.png](images/img_9.png) <br><br>
 
 ### Plan
 **Now go back to your main.tf file and create first terraform job**  <br><br>
    - Plan what you need  
    - Here is my example 
-   ```bash
+```hcl
+# create service on the cloud - launch an ec2 instance on aws
+# which region
+provider "aws"{
+
+        region = "eu-west-1"
+}
+# MUST NOT HARD CODE ANY KEYS!
+# MUST NOT PUSH ANYTHING TO GITHUB UNTIL WE HAVE CREATED A .gitignore file
+# which service/resources - ec2
+# which type of instance - AMI to use            
+# size - t2 micro            
+# associate public ip with instance          
+# name resource  
+```
+   - We can then populate our plan with some declarative code which will tell terraform what to do (not how to do it)
+
+```hcl
    # create service on the cloud - launch an ec2 instance on aws
     # which region
     provider "aws"{
@@ -153,55 +178,38 @@
     # MUST NOT HARD CODE ANY KEYS!
     # MUST NOT PUSH ANYTHING TO GITHUB UNTIL WE HAVE CREATED A .gitignore file
     # which service/resources - ec2
-    # which type of instance - AMI to use            
-    # size - t2 micro            
-    # associate public ip with instance          
-    # name resource  
-   ```
-   - We can then populate our plan with some declarative code which will tell terraform what to do (not how to do it)
-
-    ```bash
-       # create service on the cloud - launch an ec2 instance on aws
-        # which region
-        provider "aws"{
-        
-                region = "eu-west-1"
-        }
-        # MUST NOT HARD CODE ANY KEYS!
-        # MUST NOT PUSH ANYTHING TO GITHUB UNTIL WE HAVE CREATED A .gitignore file
-        # which service/resources - ec2
-        resource "aws_instance" "app_instance" {
-        
-        # which type of instance - AMI to use
-                ami = "ami-02f0341ac93c96375"
-        
-        # size - t2 micro
-                instance_type = "t2.micro"
-        
-        # associate public ip with instance
-                associate_public_ip_address = true
-        
-        # name resource
-                tags = {
-                        Name = "dan-terraform-tech258-app"
-                }
-        }
-         
-    ```
+    resource "aws_instance" "app_instance" {
+    
+    # which type of instance - AMI to use
+            ami = "ami-02f0341ac93c96375"
+    
+    # size - t2 micro
+            instance_type = "t2.micro"
+    
+    # associate public ip with instance
+            associate_public_ip_address = true
+    
+    # name resource
+            tags = {
+                    Name = "dan-terraform-tech258-app"
+            }
+    }
+     
+```
 
 ### Running first job   
 
 1. **Now we have our code, we can use** `terraform plan`
     - This creates an execution plan, which lets you preview the changes that Terraform plans to make to your infrastructure. When Terraform creates a plan it reads the current state of any already-existing remote objects to make sure that the Terraform state is up-to-date
     - This will give us a big output of things it understood from our code and what its going to create
-    - Once we reviewed it and are happy we can move on <br><br> <div style="width:500px; margin: left;"> ![img_10.png](img_10.png) </div> <br><br> <br>
+    - Once we reviewed it and are happy we can move on <br><br> <div style="width:500px; margin: left;"> ![img_10.png](images/img_10.png) </div> <br><br> <br>
 2. **Once the plan has been made we can use `terraform apply` to tell terraform to go and make all those changes** <br><br>
-    - It will show you your plan and ask you to confirm if you want to go ahead and you must type yes to continue <br><br>  ![img_11.png](img_11.png) <br><br>
-    - It will then go and make your resources <br> ![img_12.png](img_12.png) <br><br>
-    - We can verify this on the AWS console <br> ![img_13.png](img_13.png) <br><br> <br><br> <br>
+    - It will show you your plan and ask you to confirm if you want to go ahead and you must type yes to continue <br><br>  ![img_11.png](images/img_11.png) <br><br>
+    - It will then go and make your resources <br> ![img_12.png](images/img_12.png) <br><br>
+    - We can verify this on the AWS console <br> ![img_13.png](images/img_13.png) <br><br> <br><br> <br>
 3. **We can use `terraform destroy` to terminate resources** (such as the ones we made in our main.tf) <br><br>
-    - It will give us the same confirmation with the plan in which we have to put yes to continue <br> ![img_14.png](img_14.png) <br> ![img_15.png](img_15.png) <br><br>
-    - Can confirm in the console again <br> ![img_16.png](img_16.png) <br><br><br><br>
+    - It will give us the same confirmation with the plan in which we have to put yes to continue <br> ![img_14.png](images/img_14.png) <br> ![img_15.png](images/img_15.png) <br><br>
+    - Can confirm in the console again <br> ![img_16.png](images/img_16.png) <br><br><br><br>
 
 
 ### Creating separate variable file
@@ -215,23 +223,23 @@
 
 1. Create a file called `variables.tf`
 2. In here add what you want to reference. For example the AMI.
-    ```terraform
+    ```hcl
     # create variables to use in main.tf 
     # ami
     variable "app_ami_id" {
          default = "ami-02f0341ac93c96375"
     }
    ```
-   ![img_21.png](img_21.png)
+   ![img_21.png](images/img_21.png)
 3. Refer back to this in main so go to wherever ami is used using _var.(variablename)_ <br>
 4. `ami = var.app_ami_id` <br>
-![img_26.png](img_26.png)
+![img_26.png](images/img_26.png)
 ### Full job
 
 - The full job now has a main.tf and a variables.tf that it can reference
 - We can hide sensitive data in our variables file and do not include it in our repo (see Git ignore section)
 - The full job will create our VPC, public & private subnets, app and db security groups and 2 VMs. One for the app and one for the DB.
-- The full main.tf and variables.tf file are in the appendix for this demo
+- The full main.tf and variables.tf file are in the appendix
 
 ### Git ignore
 - We need to ignore 5 files in our `.gitignore` file
@@ -261,17 +269,236 @@
     terraform.tfvars
   ```
 - Verify they are not included by opening gitbash and running `git status --ignored`
-- ![img_22.png](img_22.png)
+- ![img_22.png](images/img_22.png)
 
 ## Creating a script to launch a service on multiple providers - GitHub and AWS
 
 - To create resources on two different providers we have to specify them in our file and ensure we have the right access
-- 
+- First we need a token for Github
+Creating a GitHub repository with an access token using Terraform involves a few steps. First, you need to set up a GitHub personal access token with the necessary permissions. Then, you will use the Terraform GitHub provider to create and manage the repository. Here is a step-by-step guide:
+
+1. **Generate a GitHub Personal Access Token**:
+   - Go to your GitHub account settings.
+   - Navigate to "Developer settings" -> "Personal access tokens".
+   - Click "Generate new token".
+   - Give the token a descriptive name and select the scopes you need (e.g., `repo` for full control of private repositories).
+   - Generate the token and save it securely. You will need it for Terraform configuration.
+
+**Easy unsecure method:**
+
+1. add the following content to main.tf :
+
+   ```hcl
+   provider "github" {
+     token = var.github_token
+   }
+
+   resource "github_repository" "example" {
+     name        = "example-repo"
+     description = "This is an example repository created using Terraform"
+     private     = false
+   }
+   ```
+2. add the following to variables.tf
+    ```hcl
+    variable "github_token" {
+    default = "your_github_personal_access_token"
+    }
+    
+   ```
+3. Run `terraform init -upgrade` to tell terraform to install the github modules it needs
+4. Run `terraform apply`
+
+**Better more secure method:**
+
+1. **Set Up Your Terraform Configuration**:
+   add the following content to main.tf :
+
+   ```hcl
+   provider "github" {
+     token = var.github_token
+   }
+
+   resource "github_repository" "example" {
+     name        = "example-repo"
+     description = "This is an example repository created using Terraform"
+     private     = false
+   }
+
+   variable "github_token" {
+     type      = string
+     sensitive = true
+   }
+   ```
+
+2. **Edit `variables.tf` File**:
+   add the following to `variables.tf` file to define the `github_token` variable:
+
+   ```hcl
+   variable "github_token" {
+     description = "GitHub personal access token"
+     type        = string
+   }
+   ```
+
+3. **Create a `terraform.tfvars` File**:
+   Create a `terraform.tfvars` file in the same directory to provide the value for your GitHub token:
+
+   ```hcl
+   github_token = "your_github_personal_access_token"
+   ```
+
+   Replace `"your_github_personal_access_token"` with the actual token you generated earlier.
+
+4. **Initialize Terraform**:
+   Open a terminal, navigate to your project directory, and run the following command to initialize Terraform:
+
+   ```sh
+   terraform init
+   ```
+
+5. **Apply the Configuration**:
+   Run the following command to create the GitHub repository:
+
+   ```sh
+   terraform apply
+   ```
+
+   Terraform will prompt you to confirm that you want to create the resources. Type `yes` and press Enter.
+
+If everything is configured correctly, Terraform will create the repository on GitHub using the provided access token.
+
+### Example Directory Structure:
+```
+/terraform-github-repo
+  ├── main.tf
+  ├── variables.tf
+  └── terraform.tfvars
+```
+
+### Security Note:
+Make sure to keep your `terraform.tfvars` file secure and avoid committing it to version control. Alternatively, you can provide the GitHub token via environment variables to keep it more secure. To do this, you can modify the `provider` block in `main.tf` to look like this:
+
+```hcl
+provider "github" {
+  token = var.github_token
+}
+
+variable "github_token" {
+  type        = string
+  description = "GitHub personal access token"
+  sensitive   = true
+}
+```
+
+And then set the environment variable before running `terraform apply`:
+
+```sh
+export TF_VAR_github_token="your_github_personal_access_token"
+terraform apply
+```
+
+This method keeps your token out of your configuration files and more secure.
+
+Putting sensitive information like a GitHub token directly into your `variables.tf` file is generally not recommended for several reasons:
+
+1. **Security Risks**:
+   - **Exposure**: Storing sensitive data directly in the configuration files increases the risk of accidentally exposing these credentials, especially if the files are checked into version control systems like GitHub.
+   - **Shared Access**: If multiple people have access to your Terraform configuration files, they all would have access to the sensitive data.
+
+2. **Best Practices**:
+   - **Separation of Configuration and Secrets**: It's a best practice to keep configuration separate from secrets. This approach ensures that sensitive information is handled more securely and can be rotated or managed without modifying the configuration files.
+   - **Environment-Specific Configuration**: Using environment variables or dedicated secret management tools allows different environments (development, staging, production) to use different credentials without changing the code.
+
+### Using `terraform.tfvars` for Secrets
+
+One common approach is to use a `terraform.tfvars` file to store secrets, which you can ensure is excluded from version control:
+
+1. **Update `.gitignore`**:
+   Add `terraform.tfvars` to your `.gitignore` file to ensure it is not tracked by version control:
+
+   ```plaintext
+   terraform.tfvars
+   ```
+
+2. **Create `terraform.tfvars`**:
+   Create a `terraform.tfvars` file and add your GitHub token:
+
+   ```hcl
+   github_token = "your_github_personal_access_token"
+   ```
+
+3. **Use `variables.tf` to Define Variables**:
+   Define the variable in `variables.tf` without setting the value directly:
+
+   ```hcl
+   variable "github_token" {
+     description = "GitHub personal access token"
+     type        = string
+     sensitive   = true
+   }
+   ```
+
+4. **Configure Provider in `github_aws.tf`**:
+   Use the variable in your Terraform configuration:
+
+   ```hcl
+   provider "github" {
+     token = var.github_token
+   }
+
+   resource "github_repository" "example" {
+     name        = "example-repo"
+     description = "This is an example repository created using Terraform"
+     private     = false
+   }
+   ```
+
+### Alternative: Using Environment Variables
+
+Another secure method is to use environment variables:
+
+1. **Set Environment Variable**:
+   Set the GitHub token as an environment variable:
+
+   ```sh
+   export TF_VAR_github_token="your_github_personal_access_token"
+   ```
+
+2. **Define Variable in `variables.tf`**:
+   Define the variable without a default value:
+
+   ```hcl
+   variable "github_token" {
+     description = "GitHub personal access token"
+     type        = string
+     sensitive   = true
+   }
+   ```
+
+3. **Configure Provider in `github_aws.tf`**:
+   Use the variable in your Terraform configuration:
+
+   ```hcl
+   provider "github" {
+     token = var.github_token
+   }
+
+   resource "github_repository" "example" {
+     name        = "example-repo"
+     description = "This is an example repository created using Terraform"
+     private     = false
+   }
+   ```
+
+### Summary
+
+By keeping sensitive information out of your `variables.tf` file and using either a `terraform.tfvars` file (excluded from version control) or environment variables, you enhance the security of your Terraform configurations. This approach aligns with best practices for managing sensitive data and ensures that your infrastructure remains secure.
 
 ## Other useful information
 
 - If we type `terraform` it will give us some useful commands <br>
-  ![img_17.png](img_17.png) <br><br>
+  ![img_17.png](images/img_17.png) <br><br>
 - A useful one to stop instances rather than terminate is `terraform apply -var 'instance_id=<your_instance_id>' -var 'desired_state=stopped`
 
 ## Appendix
@@ -283,11 +510,11 @@
 
 - [_Click here_](https://developer.hashicorp.com/terraform/tutorials/aws-get-started/install-cli#install-cli) for full official installation <br><br>
   - Need to download file and then register its path <br><br>
-    1. **Open _run_ in windows and type in** `sysdm.cpl` <br>  ![img_3.png](img_3.png) <br><br>
-    2. **Go to advanced and then environment variables** <br> ![img_4.png](img_4.png) <br><br>
-    3. **Go to path and click edit** <br> ![img_5.png](img_5.png) <br><br>
-    4. **Add your path to where you have the downloaded terraform file and click ok** <br> ![img_6.png](img_6.png) <br><br>
-    5. **Check it has worked by checking version in git bash use command** `terraform -v`<br> ![img_7.png](img_7.png) <br><br>
+    1. **Open _run_ in windows and type in** `sysdm.cpl` <br>  ![img_3.png](images/img_3.png) <br><br>
+    2. **Go to advanced and then environment variables** <br> ![img_4.png](images/img_4.png) <br><br>
+    3. **Go to path and click edit** <br> ![img_5.png](images/img_5.png) <br><br>
+    4. **Add your path to where you have the downloaded terraform file and click ok** <br> ![img_6.png](images/img_6.png) <br><br>
+    5. **Check it has worked by checking version in git bash use command** `terraform -v`<br> ![img_7.png](images/img_7.png) <br><br>
     6. **In the same place where you set the environment variables you can add your AWS secret key and ID so that terraform can use it when it wants to create resources for you without you needing to specify them.**
        - It checks this by looking for 2 specific variables that must be saved as: 
        - `AWS_ACCESS_KEY_ID`
@@ -302,11 +529,11 @@
 
 #### Original main: <br><br>
 
-![img_18.png](img_18.png)
+![img_18.png](images/img_18.png)
 <p align="center"> screenshot showing the security group rules being declared in the main.tf </p>
 <br><br>
 
-```terraform
+```hcl
 # create security groups
 #app
 
@@ -363,11 +590,11 @@ resource "aws_security_group" "dan-db-sg" {
 ```
 #### New variables file
 
-![img_20.png](img_20.png)
+![img_20.png](images/img_20.png)
 <p align="center"> screenshot showing the new Security group variable </p>
 <br><br>
 
-```terraform
+```hcl
 # create variables to use in main.tf 
 # ami
 variable "app_ami_id" {
@@ -452,7 +679,7 @@ variable "db_ingress_rules" {
 
 #### New main file
 
-![img_19.png](img_19.png)
+![img_19.png](images/img_19.png)
 <p align="center"> screenshot showing the new Security group variable being referred to</p>
 <br><br>
 

@@ -6,6 +6,9 @@ reduces human error
 quick provisioning
 less worry about architecture once done, dont have to repay yourself, DRY
 
+
+![img.png](img.png)
+
 ## Orchestration - Terraform
 
 Creates and provisions resources in the cloud

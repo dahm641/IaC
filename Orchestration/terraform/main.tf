@@ -87,7 +87,7 @@ resource "aws_instance" "dan-app"{
     security_groups = [aws_security_group.dan-app-sg.id]
 
 # key pair
-    key_name = "tech258"
+    key_name = "tech258-joshg"
 # name resource
 	tags = {
 		Name = "dan-terraform-tech258-app"
@@ -113,9 +113,20 @@ resource "aws_instance" "dan-db"{
     security_groups = [aws_security_group.dan-db-sg.id]
 
 # key pair
-    key_name = "tech258"
+    key_name = "tech258-joshg"
 # name resource
 	tags = {
 		Name = "dan-terraform-tech258-db"
 	}
 }
+
+provider "github" {
+	token = var.github_token
+}
+
+resource "github_repository" "IaC-github-automated-repo" {
+	name        = "IaC-github-automated-repo"
+	description = "This is an example repository created using Terraform"
+	private     = false
+}
+
