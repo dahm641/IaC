@@ -273,7 +273,10 @@ provider "aws"{
 
 ## Creating a script to launch a service on multiple providers - GitHub and AWS
 
+![img.png](img.png)
+
 - To create resources on two different providers we have to specify them in our file and ensure we have the right access
+- Can store the statefile in an s3 bucket so multiple people can access it
 - First we need a token for Github
 Creating a GitHub repository with an access token using Terraform involves a few steps. First, you need to set up a GitHub personal access token with the necessary permissions. Then, you will use the Terraform GitHub provider to create and manage the repository. Here is a step-by-step guide:
 
