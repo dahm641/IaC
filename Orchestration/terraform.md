@@ -34,6 +34,13 @@
     * [Full job](#full-job)
     * [Git ignore](#git-ignore)
   * [Creating a script to launch a service on multiple providers - GitHub and AWS](#creating-a-script-to-launch-a-service-on-multiple-providers---github-and-aws)
+  * [Plan](#plan-1)
+    * [Example Directory Structure:](#example-directory-structure)
+    * [Security Note:](#security-note)
+    * [Using `terraform.tfvars` for Secrets](#using-terraformtfvars-for-secrets)
+    * [Alternative: Using Environment Variables](#alternative-using-environment-variables)
+    * [Summary](#summary)
+  * [Collaboration with Terraform (storing statefile in S3)](#collaboration-with-terraform-storing-statefile-in-s3)
   * [Other useful information](#other-useful-information)
   * [Appendix](#appendix)
     * [Installation guide](#installation-guide-)
@@ -273,10 +280,11 @@ provider "aws"{
 
 ## Creating a script to launch a service on multiple providers - GitHub and AWS
 
-![img.png](img.png)
+![img_2.png](img_2.png)
 
+## Plan
 - To create resources on two different providers we have to specify them in our file and ensure we have the right access
-- Can store the statefile in an s3 bucket so multiple people can access it
+- Create the resources necessary
 - First we need a token for Github
 Creating a GitHub repository with an access token using Terraform involves a few steps. First, you need to set up a GitHub personal access token with the necessary permissions. Then, you will use the Terraform GitHub provider to create and manage the repository. Here is a step-by-step guide:
 
@@ -497,6 +505,18 @@ Another secure method is to use environment variables:
 ### Summary
 
 By keeping sensitive information out of your `variables.tf` file and using either a `terraform.tfvars` file (excluded from version control) or environment variables, you enhance the security of your Terraform configurations. This approach aligns with best practices for managing sensitive data and ensures that your infrastructure remains secure.
+
+## Collaboration with Terraform (storing statefile in S3)
+
+![img_3.png](img_3.png)
+
+- The state file can be stored in an S3 bucket instead of locally
+- This allows for collaboration between multiple people within a team
+- The state file gets locked locally by default to ensure you cant make multiple changes at the same time
+- In S3 its not locked by default which can lead to a corrupt file if multiple people run terraform commadns at the same time
+- Can lock it using a dynamodb resource so that only one person can make changes at a time
+
+![img_1.png](img_1.png)
 
 ## Other useful information
 
